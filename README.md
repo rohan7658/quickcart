@@ -57,17 +57,3 @@ Ensure you have the following installed:
 3. Commit changes: `git commit -m 'Added new feature'`.
 4. Push the branch: `git push origin feature-name`.
 5. Open a Pull Request.
-
-## License
-This project is licensed under the MIT License.
-
-## Contact
-For queries, contact: **your-email@example.com**
-
-
-
-Yes it is!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
