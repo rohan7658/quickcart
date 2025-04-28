@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -16,6 +15,10 @@ const HomePage = () => {
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [newListName, setNewListName] = useState('');
   const [deleteConfirmation, setDeleteConfirmation] = useState<string | null>(null);
+  const [password, setPassword] = useState('');
+  const [passwordDialogOpen, setPasswordDialogOpen] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [isChildMode, setIsChildMode] = useState(false); // Track child mode state
   const navigate = useNavigate();
 
   const handleCreateList = () => {
@@ -54,6 +57,24 @@ const HomePage = () => {
     }
   };
 
+  const handleChildModeToggle = () => {
+    setPasswordDialogOpen(true); // Always ask password first
+  };
+  
+  const handlePasswordVerification = () => {
+    const correctPassword = '963258';
+  
+    if (password === correctPassword) {
+      setPasswordDialogOpen(false); // Close the password dialog
+      setPassword(''); // Clear the password field
+      setErrorMessage(''); // Clear any error message
+      setIsChildMode((prev) => !prev); // Toggle the child mode ON or OFF
+    } else {
+      setErrorMessage('Incorrect password. Please try again.');
+    }
+  };
+  
+
   return (
     <div className="max-w-4xl mx-auto">
       <div className="text-center mb-12">
@@ -63,10 +84,26 @@ const HomePage = () => {
         </p>
         
         {user ? (
-          <Button onClick={() => setShowCreateDialog(true)} className="px-6 py-6">
-            <Plus className="mr-2 h-5 w-5" />
-            Create New Shopping List
-          </Button>
+          <>
+          <div className="mt-4 flex flex-col md:flex-row items-center justify-center gap-10">
+            <Button onClick={() => setShowCreateDialog(true)} className="px-6 py-6">
+              <Plus className="mr-2 h-5 w-5" />
+              Create New Shopping List
+            </Button>
+
+            <div className="flex items-center gap-2">
+              <b><label className="text-black-700">Child Mode</label></b>
+              <Button
+                onClick={handleChildModeToggle}
+                className={`relative inline-flex items-center px-5 py-4 rounded-full transition-colors duration-300 ${
+                  isChildMode ? 'bg-green-700 hover:bg-green-600' : 'bg-gray-400 hover:bg-gray-500'
+                }`}
+              >
+                {isChildMode ? 'Disable' : 'Enable'}
+              </Button>
+            </div>
+          </div>
+          </>
         ) : (
           <Link to="/login">
             <Button className="px-6 py-6">
@@ -88,7 +125,7 @@ const HomePage = () => {
               <CardContent className="p-6 text-center text-gray-500">
                 <ShoppingCart className="mx-auto h-12 w-12 text-gray-400 mb-3" />
                 <p>You don't have any shopping lists yet.</p>
-                <Button onClick={() => setShowCreateDialog(true)} variant="outline" className="mt-4">
+                <Button onClick={() => setPasswordDialogOpen(true)} variant="outline" className="mt-4">
                   <Plus className="mr-2 h-4 w-4" />
                   Create Your First List
                 </Button>
@@ -108,18 +145,28 @@ const HomePage = () => {
                           </p>
                         </div>
                         <div className="flex space-x-1">
-                          <Button variant="ghost" size="sm" onClick={() => handleEditList(list.id)}>
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                          <Button variant="ghost" size="sm" onClick={() => handleViewNavigation(list.id)}>
-                            <Map className="h-4 w-4" />
-                          </Button>
-                          <Button variant="ghost" size="sm" onClick={() => confirmDeleteList(list.id)}>
-                            <Trash2 className="h-4 w-4 text-red-500" />
-                          </Button>
+                          {/* Only show edit and delete buttons if child mode is off */}
+                          {!isChildMode && (
+                            <>
+                              <Button variant="ghost" size="sm" onClick={() => handleEditList(list.id)}>
+                                <Edit className="h-4 w-4" />
+                              </Button>
+                              <Button variant="ghost" size="sm" onClick={() => handleViewNavigation(list.id)}>
+                                <Map className="h-4 w-4" />
+                              </Button>
+                              <Button variant="ghost" size="sm" onClick={() => {
+                                if (window.confirm('Are you sure you want to delete this list?')) {
+                                  deleteList(list.id);
+                                }
+                              }}>
+                                <Trash2 className="h-4 w-4 text-red-500" />
+                              </Button>
+                            </>
+                          )}
                         </div>
                       </div>
                       
+
                       <div className="mt-2 text-sm">
                         <p className="text-gray-500">
                           Updated: {new Date(list.updatedAt).toLocaleDateString()}
@@ -166,16 +213,27 @@ const HomePage = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Delete Confirmation Dialog */}
-      <Dialog open={!!deleteConfirmation} onOpenChange={() => setDeleteConfirmation(null)}>
+      {/* Password Dialog */}
+      <Dialog open={passwordDialogOpen} onOpenChange={setPasswordDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Delete Shopping List</DialogTitle>
+            <DialogTitle>Enter Password</DialogTitle>
           </DialogHeader>
-          <p>Are you sure you want to delete this shopping list? This action cannot be undone.</p>
+          <div className="py-4">
+            <Label htmlFor="password">Password</Label>
+            <Input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Enter password"
+              autoFocus
+            />
+            {errorMessage && <p className="text-red-500 text-sm">{errorMessage}</p>}
+          </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setDeleteConfirmation(null)}>Cancel</Button>
-            <Button variant="destructive" onClick={handleDeleteList}>Delete</Button>
+            <Button variant="outline" onClick={() => setPasswordDialogOpen(false)}>Cancel</Button>
+            <Button onClick={handlePasswordVerification}>Verify</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
