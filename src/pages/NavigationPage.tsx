@@ -34,10 +34,6 @@ const NavigationPage = () => {
           Back
         </Button>
         <h1 className="text-2xl font-bold flex-1">{currentList.name}: Navigation</h1>
-        <Button variant="outline" onClick={() => navigate('/create-list')}>
-          <Edit className="h-4 w-4 mr-2" />
-          Edit List
-        </Button>
       </div>
 
       <Card className="bg-quickcart-50 border-quickcart-200 p-4 mb-6">
