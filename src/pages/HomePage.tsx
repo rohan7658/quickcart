@@ -18,7 +18,11 @@ const HomePage = () => {
   const [password, setPassword] = useState('');
   const [passwordDialogOpen, setPasswordDialogOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  const [isChildMode, setIsChildMode] = useState(false); // Track child mode state
+  const [isChildMode, setIsChildMode] = useState(() => {
+  const storedChildMode = localStorage.getItem('isChildMode');
+  return storedChildMode ? JSON.parse(storedChildMode) : false;
+  });
+  // Track child mode state
   const navigate = useNavigate();
 
   const handleCreateList = () => {
@@ -62,16 +66,21 @@ const HomePage = () => {
   };
   
   const handlePasswordVerification = () => {
-    const correctPassword = '963258';
-  
-    if (password === correctPassword) {
-      setPasswordDialogOpen(false); // Close the password dialog
-      setPassword(''); // Clear the password field
-      setErrorMessage(''); // Clear any error message
-      setIsChildMode((prev) => !prev); // Toggle the child mode ON or OFF
-    } else {
-      setErrorMessage('Incorrect password. Please try again.');
-    }
+  const correctPassword = '963258';
+
+  if (password === correctPassword) {
+    setPasswordDialogOpen(false);
+    setPassword('');
+    setErrorMessage('');
+    
+    setIsChildMode((prev) => {
+      const newValue = !prev;
+      localStorage.setItem('isChildMode', JSON.stringify(newValue)); // Save to storage
+      return newValue;
+    });
+  } else {
+    setErrorMessage('Incorrect password. Please try again.');
+  }
   };
   
 
