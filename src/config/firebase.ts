@@ -6,13 +6,7 @@ import { connectFirestoreEmulator } from 'firebase/firestore';
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyCe29pEpbniIEHt9m5_jn2YX2n9KFTB69M",
-  authDomain: "quickcart-43b96.firebaseapp.com",
-  projectId: "quickcart-43b96",
-  storageBucket: "quickcart-43b96.firebasestorage.app",
-  messagingSenderId: "1098411892666",
-  appId: "1:1098411892666:web:b8e7d5bc8a70caef18c783",
-  measurementId: "G-PP41NBPZHL"
+  //Firebase configuration
 };
 
 // Initialize Firebase
@@ -32,3 +26,4 @@ if (import.meta.env.DEV) {
 }
 
 export { app, auth, db };
+
